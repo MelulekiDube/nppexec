@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DlgAdvancedOptions.h"
 #include "c_base/str_func.h"
 #include <commctrl.h>
+#include "npp_files/Notepad_plus_msgs.h"
 
 #ifndef IMF_AUTOFONT
   #define IMF_AUTOFONT 0x0002
@@ -4512,9 +4513,15 @@ void ConsoleDlg::OnSize(HWND hDlg)
 
 void ConsoleDlg::printConsoleReady()
 {
-  CNppExec& NppExec = Runtime::GetNppExec();
-  if (!NppExec.GetCommandExecutor().IsChildProcessRunning())
-    NppExec.GetConsole().PrintMessage( _T("================ READY ================"), false );
+  TCHAR directoryBuffer[MAX_PATH+1];
+  directoryBuffer[0] = 0;
+  CNppExec& NppExec = Runtime::GetNppExec ();
+  ::GetCurrentDirectory ((WPARAM)(FILEPATH_BUFSIZE - 1), directoryBuffer);
+  if (directoryBuffer[0])
+  {
+	  if (!NppExec.GetCommandExecutor ().IsChildProcessRunning ())
+		  NppExec.GetConsole ().PrintMessage ((directoryBuffer), false);
+  }
 }
 
 bool ConsoleDlg::IsConsoleHelpCommand(const tstr& S)
