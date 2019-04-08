@@ -4367,8 +4367,17 @@ void CNppExec::OnSelectConsoleFont()
 
 void CNppExec::OnShowConsoleDlg()
 {
-    if ( CNppExec::_bIsNppReady || (GetOptions().GetInt(OPTI_CONSOLE_VISIBLE) == CAdvOptDlg::CON_AUTO) )
-        showConsoleDialog(hideIfShown, 0);
+	if (CNppExec::_bIsNppReady || (GetOptions ().GetInt (OPTI_CONSOLE_VISIBLE) == CAdvOptDlg::CON_AUTO))
+		showConsoleDialog (hideIfShown, 0);
+	TCHAR directoryBuffer[MAX_PATH + 1];
+	directoryBuffer[0] = 0;
+	CNppExec& NppExec = Runtime::GetNppExec ();
+	::GetCurrentDirectory ((WPARAM)(FILEPATH_BUFSIZE - 1), directoryBuffer);
+	if (directoryBuffer[0])
+	{
+		if (!NppExec.GetCommandExecutor ().IsChildProcessRunning ())
+			NppExec.GetConsole ().PrintMessage ((directoryBuffer), false);
+	}
 }
 
 void CNppExec::OnToggleConsoleDlg()

@@ -58,7 +58,15 @@ static DWORD WINAPI dwRunCollateralScriptThread(LPVOID lpScrptEngnRnr)
     }
     else if ( !pScriptEngine->IsExternal() )
     {
-        pNppExec->GetConsole().PrintMessage( _T("================ READY ================"), false );
+		TCHAR directoryBuffer[MAX_PATH + 1];
+		directoryBuffer[0] = 0;
+		CNppExec& NppExec = Runtime::GetNppExec ();
+		::GetCurrentDirectory ((WPARAM)(FILEPATH_BUFSIZE - 1), directoryBuffer);
+		if (directoryBuffer[0])
+		{
+			if (!NppExec.GetCommandExecutor ().IsChildProcessRunning ())
+				NppExec.GetConsole ().PrintMessage ((directoryBuffer), false);
+		}
         pNppExec->GetConsole().RestoreDefaultTextStyle(true);
     }
 
@@ -959,8 +967,16 @@ DWORD CNppExecCommandExecutor::ScriptableCommand::RunConsoleScript(Command* pCom
             {
                 if ( !pNppExec->GetCommandExecutor().GetRunningScriptEngine() )
                 {
-                    pNppExec->GetConsole().PrintMessage( _T("================ READY ================"), false );
-                }
+					TCHAR directoryBuffer[MAX_PATH + 1];
+					directoryBuffer[0] = 0;
+					CNppExec& NppExec = Runtime::GetNppExec ();
+					::GetCurrentDirectory((WPARAM)(FILEPATH_BUFSIZE - 1), directoryBuffer);
+					if (directoryBuffer[0])
+					{
+						if (!NppExec.GetCommandExecutor ().IsChildProcessRunning ())
+							NppExec.GetConsole ().PrintMessage ((directoryBuffer), false);
+					}
+				}
                 ConsoleDlg::GoToError_nCurrentLine = -1;
             }
 
